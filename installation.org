@@ -1,0 +1,48 @@
+#+title: Installation
+#+author:gabriel
+
+* ISO and Installation
+Com o quickget peguei a iso do Windows Server 2022
+#+begin_src sh
+[17:58][]~/study/AD ✮ quickget windows-server 2022
+#+end_src
+
+Iniciando pela primeira vez -->
+#+begin_src python3
+[17:59][]~/study/AD ✮ quickemu --vm windows-server-2022.conf
+#+end_src
+
+após a primeira inicialização e instalação, criei uma VM com o disco já existente no virt-manager, importando o disco --> ~disk.qcow2~
+
+* Active Directory Setup
+Como instalei a versão core, vou fazer tudo via PowerShell, após já ter definido o nome para a máquina, e realizar as outras configs iniciais, no powershell ->
+#+begin_src powershell
+Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
+#+end_src
+
+Setup do Domain Controller (DC) -->
+#+begin_src powershell
+Install-ADDSForest -DomainName "lab.local"
+#+end_src
+
+Criando uma nova OU (Organizational Unit) -->
+#+begin_src powershell
+New-ADOrganizationalUnit -Name "Matriz" -Path "DC=dc01,DC=lab"
+#+end_src
+
+Criando um novo user nesta OU -->
+#+begin_src powershell
+New-ADUser -Name "biel" -SamAccountName "biel.lab" -Path "OU=Matriz,DC=dc01,DC=lab"
+#+end_src
+** ssh setup
+Instalar o OPenSSH -->
+#+begin_src powershell
+Add-WindowsCapability -Online -Name OpenSSH.Server
+#+end_src
+
+Iniciar o serviço -->
+#+begin_src powershell
+Start-Service sshd
+
+Set-Service -Name sshd -StartupType 'Automatic'
+#+end_src
