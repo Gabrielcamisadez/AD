@@ -1,0 +1,5 @@
+#+title: Readme
+#+author: gabriel
+
+Estudos sobre o Active Directory (AD)
+[[./imgs/ad.png]]
