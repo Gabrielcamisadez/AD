@@ -1,0 +1,35 @@
+#+title: Global Catalog
+#+author:gabriel
+
+* intro
+essencial para florestas com múltiplos domínios, sendo um Domain Controller que armazena uma cópia de todos os objetos de todos os domínios
+
+em um domain único , o GC tem 100% dos dados
+
+é um componente estratégico do AD, ele permite otimização na autenticação, localização de objetos e consultas entre domínios, consultas LDAP não precisam atravessar todo o ambiente
+
+*riscos clássicos* -->
+- atributos sensíveis incluidos no PAS (Partial Attribute Set)
+- replicação desnecessária para todos os GCs
+- aumento na exposição de dados
+- enumeração de toda a floresta
+
+* principais finalidades
+*busca na floresta* -->
+- Permite que um utilizador procure um e-mail ou nome em toda a organização sem saber em qual domínio o objeto está.
+
+*logon* -->
+- O GC é necessário para verificar a pertença a Grupos Universais durante o login. Se o GC estiver offline e não houver cache, o utilizador pode não conseguir logar.
+
+*user principal name (UPN)* -->
+- Resolve logins do tipo utilizador@dominio.com quando o sufixo é diferente do nome do domínio NetBIOS.
+
+* verificar todos os GCs da floresta
+#+begin_src powershell
+Get-ADForest | Select-Object -ExpandProperty GlobalCatalogs
+#+end_src
+
+verificar se um servidor específico é GC -->
+#+begin_src powershelll
+(Get-ADDomainController -Identity "CENTRAL").IsGlobalCatalog
+#+end_src
