@@ -4,22 +4,22 @@
 * dhcp basics
 Para que o laboratório seja "autônomo", o próximo passo lógico é o DHCP. Ele garantirá que qualquer nova VM (Windows ou Linux) que você subir no virt-manager receba automaticamente:
 
-1 -->
+Instalação do DHCP -->
 #+begin_src powershell
 Install-WindowsFeature DHCP -IncludeManagementTools
 #+end_src
 
-2 -->
+Adicionando ao domínio -->
 #+begin_src powershell
 Add-DhcpServerInDC -DnsName central.dc01.lab -IPAddress 192.168.122.26
 #+end_src
 
-3 -->
+Escopo teste -->
 #+begin_src powershell
 Add-DhcpServerv4Scope -Name "Escopo-Principal" -StartRange 192.168.122.100 -EndRange 192.168.122.200 -SubnetMask 255.255.255.0
 #+end_src
 
-4 -->
+ -->
 #+begin_src powershell
 Set-DhcpServerv4OptionValue -DnsServer 192.168.122.26 -Router 192.168.122.1 -DnsDomain dc01.lab
 #+end_src

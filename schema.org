@@ -1,0 +1,74 @@
+#+title: Schema
+#+Author:gabriel
+
+* intro
+o schema é um dos componentes mais críticos da infra do domínio, ele define oque o AD pode armazenar e como esses dados se comportam
+- classes e objetos (user, computer, group, organizationalUnit, contact)
+- atributos (sAMAccountName, memberOf, userPrincipalName, pwdLastSet)
+
+cada objeto no AD é uma instância de uma classe definida no schema, e cada classe possui um conjunto de atributos permitidos.
+
+o schema é global à floresta, qualquer modificação replica automaticamente para todos os Domain Controllers
+
+apenas o schema master (FSMO Role) pode aceitar alterações no schema
+
+alterações são raras, pois são praticamente irreversíveis.
+* schema
+localizar o path do schema -->
+#+begin_src powershell
+(Get-ADRootDSE).schemaNamingContext
+#+end_src
+
+salvando em uma variável -->
+#+begin_src powershell
+$schemaPath = (Get-ADRootDSE).schemaNamingContext
+#+end_src
+
+* classes
+localizar classes existentes -->
+#+begin_src powershell
+Get-ADObject -SearchBase $schemaPath -Filter 'ObjectClass -eq "classSchema"' | Select-Object Name -First 25
+
+Name
+----
+Organization
+NTDS-DSA
+DMD
+SubSchema
+Attribute-Schema
+account
+Class-Schema
+#+end_src
+
+Verificar detalhes de uma classe específica -->
+#+begin_src powershell
+Get-ADObject -Identity "CN=User,$schemaPath" -Properties *
+#+end_src
+
+* atributos
+os atributos são propriedades individuais. Existem milhares no AD -->
+#+begin_src powershell
+Get-ADObject -SearchBase $schemaPath -Filter 'ObjectClass -eq "attributeSchema"' | Select-Object Name -First 10
+
+Name
+----
+FRS-Extensions
+ms-DS-Resultant-PSO
+ms-WMI-QueryLanguage
+Public-Key-Policy
+ms-TS-Reconnection-Action
+FRS-Fault-Condition
+ms-DS-Password-Settings-Precedence
+ms-WMI-ScopeGuid
+Purported-Search
+ms-TS-Broken-Connection-Action
+#+end_src
+
+verificando quais atributos pertecem a classe usuário por exemplo -->
+#+begin_src powershell
+Get-ADObject -Identity "CN=User,$schemaPath" -Properties mustContain, mayContain | Select-Object mustContain, mayContain
+
+mustContain mayContain
+----------- ----------
+{}          {msDS-SourceObjectDN, msSFU30NisDomain, msSFU30Name, x500uniqueIdentifier...}
+#+end_src
