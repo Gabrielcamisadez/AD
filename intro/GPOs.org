@@ -3,3 +3,44 @@
 
 * intro
 as GPOs podem cobrir todos os computadores e usuários da floresta sendo Globais
+
+No Windows Server Core, o PowerShell é extremamente poderoso para a gestão estrutural das GPOs, mas limitado para a edição de conteúdo (os "cliques" dentro das pastinhas de configuração).
+
+* gerenciamento básico de GPOs
+verificar GPO existente -->
+#+begin_src powershell
+Get-GPO -Name GPO_test
+#+end_src
+
+para criar uma nova GPO -->
+#+begin_src powershell
+New-GPO -Name "GPO_test" -Comment "descricao de teste"
+#+end_src
+
+para remover uma GPO -->
+#+begin_src powershell
+Remove-GPO -Name "GPO_test"
+#+end_src
+
+copiar GPOs -->
+#+begin_src powershell
+Copy-GPO -SourceGPO "GPO_Origem" -TargetGPO "GPO_Destino"
+#+end_src
+
+backup e restore -->
+#+begin_src powershell
+Backup-GPO -All -Path "C:\GPOBackups"
+#+end_src
+
+* gestao de vinculos
+definição de onde as GPOs devem ser aplicadas
+
+Vincular a uma OU -->
+#+begin_src powershell
+New-GPLink -Name "GPO_test" -Target "OU=TI,DC=dc01,DC=lab"
+#+end_src
+
+Ativar ou desativar um vinculo -->
+#+begin_src powershell
+Set-GPLink -Name "GPO_test" -Target "OU=Matriz" -LinkEnabled No
+#+end_src
