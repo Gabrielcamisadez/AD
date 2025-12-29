@@ -1,0 +1,50 @@
+#+title: First Users And Groups
+#+Author:gabriel
+
+* new group
+Criando um grupo de TI dentro da OU Matriz que já foi criada -->
+#+begin_src powershell
+New-ADGroup -Name "TI_Security" `
+>> -GroupCategory Security `
+>> -GroupScope Global `
+>> -Path "OU=Matriz,DC=dc01,DC=lab" `
+>> -Description "Security Team only"
+#+end_src
+
+Verificando a existência deste novo Group -->
+#+begin_src powershell
+ Get-ADGroup -Identity TI_Security
+
+DistinguishedName : CN=TI_Security,OU=Matriz,DC=dc01,DC=lab
+GroupCategory     : Security
+GroupScope        : Global
+Name              : TI_Security
+ObjectClass       : group
+ObjectGUID        : 456f891e-89ae-4604-9a35-2b7525f904ce
+SamAccountName    : TI_Security
+SID               : S-1-5-21-1848798606-2362998-1364511303-1107
+#+end_src
+
+Criando um novo user -->
+#+begin_src powershell
+PS C:\Users\Administrator> $securePassword = Read-Host -AsSecureString "digite a senha"
+digite a senha: *********
+
+PS C:\Users\Administrator> New-ADUser -Name "tech user" `
+>> -SamAccountName "tech.user" `
+>> -UserPrincipalName "tech.user@dc01.lab" `
+>> -Path "OU=Matriz,DC=dc01,DC=lab" `
+>> -AccountPassword $securePassword `
+>> -Enabled $true `
+>> -ChangePasswordAtLogon $false
+#+end_src
+
+Adicionando usuários ao grupo security -->
+#+begin_src powershell
+Add-ADGroupMember -Identity "TI_Security" -Members "tech.lab"
+#+end_src
+
+Verificando todos os grupos que um usuário faz parte -->
+#+begin_src powershell
+Get-ADPrincipalGroupMembership -Identity "tech.lab"
+#+end_src

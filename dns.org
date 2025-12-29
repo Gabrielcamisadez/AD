@@ -1,0 +1,59 @@
+#+title: Dns
+#+Author:gabriel
+
+* configurações básicas no DNS
+Verificar os serviços instalados no Server -->
+#+begin_src powershell
+Get-Service dns
+
+Status   Name               DisplayName
+------   ----               -----------
+Running  dns                DNS Server
+#+end_src
+
+Verificar interface de rede configurada ao DNS -->
+#+begin_src powershell
+Get-DnsClientServerAddress
+
+InterfaceAlias               Interface Address ServerAddresses
+                             Index     Family
+--------------               --------- ------- ---------------
+Ethernet 2                           3 IPv4    {127.0.0.1}
+Ethernet 2                           3 IPv6    {::1}
+Loopback Pseudo-Interface 1          1 IPv4    {}
+Loopback Pseudo-Interface 1          1 IPv6    {fec0:0:0:ffff::1, fec0:0:0:ffff::2, fec0:0:0:ffff::3}
+#+end_src
+
+Verificar zonas DNS -->
+#+begin_src powershell
+PS C:\Users\Administrator> Get-DnsServerZone
+
+ZoneName                            ZoneType        IsAutoCreated   IsDsIntegrated  IsReverseLookupZone  IsSigned
+--------                            --------        -------------   --------------  -------------------  --------
+_msdcs.dc01.lab                     Primary         False           True            False                False
+0.in-addr.arpa                      Primary         True            False           True                 False     122.168.192.in-addr.arpa            Primary         False           True            True                 False     127.in-addr.arpa                    Primary         True            False           True                 False     255.in-addr.arpa                    Primary         True            False           True                 False     dc01.lab                            Primary         False           True            False                False
+#+end_src
+
+Análise das zonas exibidas -->
+| zona | descrição
+| dc01.lab | Esta zona é a zona primária atual, ela contém os registros de host (A) dos computadores e servidores do domínio
+| _msdcs.dc01.lab | esta zona é crítica. ela armazena registros de serviço (SRV) que permitem aos clients encontrar o DC, catálogo global e serviços de autenticação Kerberos
+| in-addr.arpa | estas são zonas de busca reversa automática para endereços locais. elas resolvem IP para nome
+
+É possível notar que não existe uma zona para a sub-rede atual (192.168.122.0).
+
+Criando a zona -->
+#+begin_src powershell
+Add-DnsServerPrimaryZone -NetworkId "192.168.122.0/24" -ReplicationScope Forest
+#+end_src
+
+Verificando -->
+#+begin_src powershell
+Get-DnsServerResourceRecord -ZoneName "dc01.lab"
+#+end_src
+
+Configurando os forwarders
+como o DNS fica responsável pela rede, o servidor precisa saber para onde perguntar os nomes externos -->
+#+begin_src powershell
+Set-DnsServerForwarder -IPAddress "8.8.8.8", "1.1.1.1"
+#+end_src
