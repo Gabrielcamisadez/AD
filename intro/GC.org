@@ -33,3 +33,8 @@ verificar se um servidor específico é GC -->
 #+begin_src powershelll
 (Get-ADDomainController -Identity "CENTRAL").IsGlobalCatalog
 #+end_src
+
+tornando um DC como global catalog -->
+#+begin_src powershell
+Set-ADDomainController -Identity "DC02" -IsGlobalCatalog $true
+#+end_src

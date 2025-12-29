@@ -1,0 +1,5 @@
+#+title: Group Policy Objects
+#+Author:gabriel
+
+* intro
+as GPOs podem cobrir todos os computadores e usuários da floresta sendo Globais
