@@ -35,5 +35,11 @@ Display Name                                            Name                    
     [ ] Certification Authority                         ADCS-Cert-Authority            Available
 #+end_src
 
-extensions do template User (default template)
+
+- extensions do template User (default template)
+
 [[../imgs/ca_templates.png]]
+
+- permissões de high privilege groups na CA
+
+[[../imgs/ca_properties.png]]
