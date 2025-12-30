@@ -53,3 +53,38 @@ verificar a string SDDL (Security Descriptor Definition Language) -->
 #+begin_src powershell
 $acl.Sddl
 #+end_src
+
+* kerberos components
+** key distribution Center (KDC)
+- it is the core component of kerberos that deals with initial authentication and with the issuing of tickets
+
+it is made up of two specific services -->
+
+*Authentication Server (AS)*
+
+  component that deals with initial authentication
+
+  After verifying the user identity, it generates a *ticket granting ticket (TGT)*. these tickets can then be exchanged for *Service tickets*
+
+*Ticket Granting Server (TGS)*
+
+component responsible for issuing *service tickets* by using the TGT
+
+** realm
+- a kerberos realm defines a logical security boundary that contains group of principal (users, services and computers) that trust a specific *key distribution center (KDC)* for authencitacion purposes
+
+  in active directory, a realm is automatically created when a domain is initialized. The kerberos realm is the uppercase version of the AD domain name
+
+  for example, for the domain hexdump.lab, the kerberos realm will be HEXDUMP.LAB
+
+to discover the realm your user is currently is, execute the following command, which print the User PRincipal Name (UPN)
+
+#+begin_src powershell
+whoami /upn
+#+end_src
+
+you can also use this other command
+
+#+begin_src powershell
+klist
+#+end_src
