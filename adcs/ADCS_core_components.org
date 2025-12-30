@@ -9,3 +9,31 @@ overview of ADCS and its main components, explaining roles and why ADCS matters 
 - issues SSL/TLS, smartcard, and authentication certificates
 
 - integrated tightly with Active Directory for autoenrollment
+
+** certification authority (CA)
+issues, revokes, and manages digital certificates
+
+** certificate templates
+define the properties and policies of certificates issued by the CA
+
+** certificate authority web enrollment
+optional roles for web-based certificate requests
+
+** certificate revocation list (CRL)
+a list published by the CA of certificates that are no longer valid and must no be trusted
+
+** certification distribution point (CDP)
+location where clients retrieve the certificate revocation list (CRL) to check if a certificate has been revoked
+
+* powershell verify
+
+#+begin_src powershell
+PS C:\Users\Administrator> Get-WindowsFeature ADCS-Cert-Authority
+
+Display Name                                            Name                       Install State
+------------                                            ----                       -------------
+    [ ] Certification Authority                         ADCS-Cert-Authority            Available
+#+end_src
+
+extensions do template User (default template)
+[[../imgs/ca_templates.png]]
