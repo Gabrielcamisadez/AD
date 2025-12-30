@@ -1,0 +1,55 @@
+#+title: Authorization
+#+Author:GAbriel
+
+* authorization in active directory
+*access control lists (ACLs)*
+- defines permissions on objects and resources
+
+*security descriptors*
+- contains ACLs
+
+*security groups*
+- primary method for assigning permissions efficiently
+
+* verificando configs de um group
+grupo domain admins de exemplo -->
+#+begin_src powershell
+Get-ADGroup -Identity "Domain Admins"
+#+end_src
+
+para pegar somente o distinguished name -->
+#+begin_src powershell
+$grp = (Get-ADGroup -Identity "Domain Admins").DistinguishedName
+#+end_src
+
+pegar o DACL do grupo selecionado -->
+#+begin_src powershell
+$acl = Get-Acl -Path "AD:\$groupDN"
+#+end_src
+
+- O DACL é a lista de ACEs (Access Control Entries).
+
+*IdentityReference* -->
+- o user ou grupo que possui a permissão (ex: BUILTIN\Administrators)
+
+*ActiveDirectoryRights* -->
+- o que eles podem fazer (ex: GenericRead, WriteProperty, ExtendedRight)
+
+*AccessControlType* -->
+- allow ou deny
+
+Veriricando o owner do objeto atual -->
+#+begin_src powershell
+PS C:\Users\Administrator> $acl.Owner
+DC01\Domain Admins
+#+end_src
+
+verificar diversos -->
+#+begin_src powershell
+$acl.Access
+#+end_src
+
+verificar a string SDDL (Security Descriptor Definition Language) -->
+#+begin_src powershell
+$acl.Sddl
+#+end_src

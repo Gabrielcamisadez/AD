@@ -1,0 +1,11 @@
+#+title: Targeted Domain Roles
+#+Author:gabriel
+
+* table
+
+| group | privilege | abuse
+| enterprise admins | forest-wide full control | full forest compromise (all domains)
+| domain admins | domain-level full control | create accounts, access DCs, persist
+| Administrators (Built-in) | local & domain admin equivalent | full control on machines where present
+| schema admins | modify AD schema (forest scope) | permanent, stealthy persistence via schema edits
+| group policy creator owners | create/link GPOs | deploy malicious GPOs to push persistence/settings
