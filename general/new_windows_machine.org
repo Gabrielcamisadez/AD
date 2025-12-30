@@ -1,0 +1,23 @@
+#+title: New Windows Machine
+#+author:gabriel
+
+* nova máquina para o domain
+primeira coisa configurar o DNS da placa de rede para apontar para o dc -->
+#+begin_src powershell
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses ("192.168.122.26")
+#+end_src
+
+testar conectividade com o domain -->
+#+begin_src powershell
+Test-Connection -ComputerName dc01.lab
+#+end_src
+
+adicionando máquina ao domain , no powershell do próprio windows desktop -->
+#+begin_src
+Add-Computer -DomainName "dc01.lab" -Restart
+#+end_src
+
+movendo o computer para uma outra OU -->
+#+begin_src powershell
+Get-ADComputer -Identity "win10" | Move-ADObject -TargetPath "OU=Matriz,DC=dc01,DC=lab"
+#+end_src

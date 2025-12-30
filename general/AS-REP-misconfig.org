@@ -1,0 +1,23 @@
+#+title: AS-REP Roasting Misconfig
+#+author:gabriel
+
+* intro
+uma configuração de um atributo do objeto user chamado userAccountControl, para verificar o status dessa configuração, filtramos a propriedade userAccountControl.
+
+o valor específico que indica a falta de pré-autenticação kerberos é o DoesNotRequirePreAuth
+
+* powershell
+verificando o status de um user específico -->
+#+begin_src powershell
+Get-ADUser -Identity "tech.user" -Properties DoesNotRequirePreAuth | Select-Object Name, DoesNotRequirePreAuth
+#+end_src
+
+pesquisa por users com esta configuração -->
+#+begin_src powershell
+Get-ADUser -Filter 'DoesNotRequirePreAuth -eq $true' -Properties DoesNotRequirePreAuth | Select-Object SamAccountName, DistinguishedName
+#+end_src
+
+corrigindo esta misconfig -->
+#+begin_src powershell
+Set-ADAccountControl -Identity "tech.lab" -DoesNotRequirePreAuth $false
+#+end_src
