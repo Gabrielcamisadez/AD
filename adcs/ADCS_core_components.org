@@ -1,0 +1,11 @@
+#+title: ADCS Core Components
+#+Author:Gabriel
+
+* ADCS (Active Directory Certificate Services)
+overview of ADCS and its main components, explaining roles and why ADCS matters for enterprise security
+
+- micrososft pulibc key infrastructure (PKI) to issue, validate, and manage digital certificates
+
+- issues SSL/TLS, smartcard, and authentication certificates
+
+- integrated tightly with Active Directory for autoenrollment
