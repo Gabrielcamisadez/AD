@@ -18,4 +18,4 @@
 excessive permissions over certificate template, certification theft or impersonation are common attack vectors
 
 | esc ID | misconfiguration | permissions | attack scenario (impact)
-| esc1 | a certificate template lets regular users requests certificates and lets them put 'any' name they want (like Administrator) in the certificate | ENROLL | 1. low priv user -> request cert (with privileged UPN in SAN) 2. CA issues cert 3. Authenticate as privileged user | esc 3 |  a certificate template has powerful uses (like requesting other certs or smart card logon) and regular users have permission to enroll for it | ENROLL | 1. low priv user -> identify vulnerable template with "enroll" rights -> request cert 2. CA issues cert 3. attacker uses issued cert to sign other requests or authenticate as an elevated user
+| esc1 | a certificate template lets regular users requests certificates and lets them put 'any' name they want (like Administrator) in the certificate | ENROLL | 1. low priv user -> request cert (with privileged UPN in SAN) 2. CA issues cert 3. Authenticate as privileged user |
