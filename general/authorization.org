@@ -88,3 +88,72 @@ you can also use this other command
 #+begin_src powershell
 klist
 #+end_src
+
+** principal
+a kerberos principal is a unique identity to which kerberos can assign tickets
+
+there are different types of principals
+
+*user principal*
+- represents an individual user in the kerberos realm. this is also known as UPN
+
+*service principal*
+- represents a service that requires authentication and authorization to be accessed by its clients
+
+example of services -->
+- SMB service
+- SQL server
+- HTTP serveer
+- LDAP server
+
+Services need to register proper service principal names (SPNs) within active directory. once this registrarion has taken place, kerberos can use issue tickets for service access
+
+list out all SPNs registed for dc01 -->
+#+begin_src powershell
+setspn -L central
+
+        ldap/central.dc01.lab/ForestDnsZones.dc01.lab
+        ldap/central.dc01.lab/DomainDnsZones.dc01.lab
+            TERMSRV/central.dc01.lab
+        DNS/central.dc01.lab
+#+end_src
+
+get the SPN of specific user -->
+#+begin_src powershell
+setspn -L tech.lab
+Registered ServicePrincipalNames for CN=tech lab,OU=Matriz,DC=dc01,DC=lab:
+#+end_src
+
+set a new SPN for the username tech -->
+#+begin_src powershell
+setspn -A HTTP/webserver.dc01.lab tech.lab
+Checking domain DC=dc01,DC=lab
+
+Registering ServicePrincipalNames for CN=tech lab,OU=Matriz,DC=dc01,DC=lab
+        HTTP/webserver.dc01.lab
+Updated object
+#+end_src
+
+*host principal*
+- represents a computer in a kerberos realm
+
+------
+
+Each princiapl has an associated *secret key*, which is used during the key agreement protocol to provide authentication
+sets
+
+** ticket granting ticket (TGT)
+a ticket granting ticket (tgt) is a kerberos ticket that is used to issue Service Tickets through a key distribution center (KDC)
+
+in secure deployments of kerberos, the TGT is issued aft er proper authentication with the Authentication Server (AS). If the authentication is successful, the KDC will issua a TGT
+
+if the TGT is issued prior to proper authentication, an attack known as AS-RESP Roasting can be performed on the kerberos realm
+
+the TGT  contains various informations, such as:
+- User ID
+- TGS ID
+- Expiration time
+- TGS session key
+- ticket flags
+
+Notice that the TGT is not sent in clear, but it is encrypted with the KDC secret key. this is used for authentication purposes
