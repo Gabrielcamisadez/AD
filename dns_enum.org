@@ -1,0 +1,28 @@
+#+title: Dns Enum
+
+* initial scan
+config no /etc/resolv.conf
+#+begin_src sh
+nameserver 192.168.122.26
+nameserver 8.8.8.8
+#+end_src
+
+teste para ver o DNS que está resolvendo -->
+#+begin_src sh
+nslookup google.com
+Server:         192.168.122.26
+Address:        192.168.122.26#53
+
+Non-authoritative answer:
+Name:   google.com
+Address: 172.217.29.238
+#+end_src
+
+dig -->
+- AXFR para testar zone transfer
+#+begin_src sh
+dig @192.168.122.26 26.122.168.192.in-addr.arpa
+
+;; AUTHORITY SECTION:
+122.168.192.in-addr.arpa. 3600  IN      SOA     central.dc01.lab. hostmaster.dc01.lab. 4 900 600 86400 3600
+#+end_src

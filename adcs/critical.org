@@ -20,10 +20,13 @@ excessive permissions over certificate template, certification theft or imperson
 | esc ID | misconfiguration | permissions | attack scenario (impact)
 | esc1 | a certificate template lets regular users requests certificates and lets them put 'any' name they want (like Administrator) in the certificate | ENROLL | 1. low priv user -> request cert (with privileged UPN in SAN) 2. CA issues cert 3. Authenticate as privileged user
 | esc 3 |  a certificate template has powerful uses (like requesting other certs or smart card logon) and regular users have permission to enroll for it | ENROLL | 1. low priv user -> identify vulnerable template with "enroll" rights -> request cert 2. CA issues cert 3. attacker uses issued cert to sign other requests or authenticate as an elevated user
+| esc4 | similar to esc1, we need write permissions on the template, make it vulnerable to esc1 | 1. low priv user --> write permission --> modify template   2. becomes esc1 --> authenticate as privileged user
 
-* Certificate template misconfiguration
+* Certificate template misconfiguration ESC1
 um template caso possua a opção *supply in the request* na propriedade subject name, qualquer usuário pode usar isso como impersonate para outro user desejado
 
 somente users com a permissão de *enroll* podem abusar desta misconfig
 
 [[../imgs/cert_templates.png]]
+
+* enrollment agent

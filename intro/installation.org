@@ -10,7 +10,7 @@ Com o quickget peguei a iso do Windows Server 2022
 Iniciando pela primeira vez -->
 #+begin_src python3
 [17:59][]~/study/AD ✮ quickemu --vm windows-server-2022.conf
-#+end_src
+2#+end_src
 
 após a primeira inicialização e instalação, criei uma VM com o disco já existente no virt-manager, importando o disco --> ~disk.qcow2~
 
