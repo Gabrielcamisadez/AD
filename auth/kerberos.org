@@ -1,0 +1,161 @@
+#+title: Kerberos
+#+author:gabriel
+
+* intro
+kerberos is an ~authentication key agreement~ protocol
+
+this means that kerberos allows two entities to establish a ~shared secret key~ securely, starting from an insecure communication channel
+
+notice that this is also what happens in the web. in the web however, when using HTTPs, we have the TLS protocol, which works by using ~X.509 digital certificates~ to authenticate entities (and a lot of other things), which is implemented using ~public key cryptography~
+
+in kerberos entities are not authenticated by digital certificates. instead, entities can rely on a centralized server, which is the ~KDC~ (key distribution center), that knows a long-term secret key for each entity involved in the communication.
+
+by using some knowledge, it is possible to establish ~ephemeral session keys~ that allows clients to autheticate to services
+
+* core components
+** Key Distribution Center (kdc)
+is the core component of kerberos that deals with initial authentication and with the issuing of tickets
+
+it is made up of two specific services :
+
+- *Authentication Server* (AS)
+
+component that deals with initial authentication
+
+after verifying the user identity, it generates a *TGT* (Ticket Granting Ticket). these tickets can then be exchanged for *service tickets*
+
+- *ticket granting server (TGS)*
+
+component responsible for issuing *Service TIckets* by using the *TGT*
+
+the *Service Tickets* allow users to access server resources
+
+** realm
+a ~kerberos realm~ defines a logical security boundary that containes group of principals (users, services and computers) that trust a specific ~key distribution center (kdc)~ for authentication purposes
+
+in active directory, a realm is automatically created when a domain is initialized. The kerberos realm is the uppercas version of the AD domain name
+
+- domain name --> dc01.lab
+
+- realm name --> DC01.LAB
+
+to discover the realm your user is currently is -->
+#+begin_src powershell
+whoami /upn
+#+end_src
+
+or
+
+#+begin_src powershel
+klist
+
+PS C:\Users\Administrator> klist
+
+Current LogonId is 0:0x1894f7
+
+Cached Tickets: (1)
+
+#0>     Client: Administrator @ DC01.LAB
+        Server: krbtgt/DC01.LAB @ DC01.LAB
+        KerbTicket Encryption Type: AES-256-CTS-HMAC-SHA1-96
+        Ticket Flags 0x40e10000 -> forwardable renewable initial pre_authent name_canonicalize              Start Time: 1/3/2026 15:18:36 (local)
+        End Time:   1/4/2026 1:18:36 (local)
+        Renew Time: 1/10/2026 15:18:36 (local)
+        Session Key Type: AES-256-CTS-HMAC-SHA1-96
+        Cache Flags: 0x1 -> PRIMARY
+        Kdc Called: CENTRAL
+#+end_src
+
+** principal
+a ~kerberos principal~ is a unique identity to which kerberos can assign tickets
+
+there are different types of principals -->
+
+- *user principal*
+  represents an individual user in the kerberos realm, this is also known as user principal name (UPN)
+
+- *service principal*
+  represents a service that requires authentication and authorization to be accessed by its clients
+
+  example of services -->
+- SMB service
+- SQL server
+- HTTP server
+
+ services need to register proper service principal names (SPNs)
+ within active directory.
+
+- *host principal*
+  represents a computer in a kerberos realm
+
+*list SPNs registed for specific account* -->
+#+begin_src powershell
+setspn -L tech.user
+
+PS C:\Users\Administrator> setspn -L tech.user
+Registered ServicePrincipalNames for CN=tech user,OU=Matriz,DC=dc01,DC=lab:
+#+end_src
+
+*to set a new SPN for the user* -->
+#+begin_src powershell
+setspn -A HTTP/webserver.dc01.lab tech.user
+#+end_src
+-----
+
+each principal has an associated *secret key*, which is used during the key agreement protocol to provide authentication
+
+principals follow a common name structure
+#+begin_src powershell
+primary/instace@REALM
+#+end_src
+
+- *primary*
+  identifies the entity
+
+- *instance*
+  further qualifies the primary
+
+- *REALM*
+  the kerberos domain in which the authentication has to take place
+
+** ticket granting ticket - TGT
+a *TGT* is a kerberos ticket that is used to issue *Service TIckets* through a *key distribution center* (KDC).
+
+in secure deployments of kerberos, the TGT is issued after proper authentication with the *Authentication Server (AS)*. if the authentication is sucessful, the KDC will issue a TGT.
+
+if the TGT is issued prior to proper authentication, an attack known as *AS-REP Roasting* can be performed on the Kerberos realm.
+
+the TGT contains various informations, such as ->
+- user ID
+- TGS ID
+-  Expiration TIme
+- TGS session key
+- ticket flags
+
+notice that the TGT is not sent in clear, it is encrypted with the KDC secret key. this is used for authentication purposes.
+
+TGT example -->
+#+begin_src powershell
+PS C:\Users\Administrator> klist
+
+Current LogonId is 0:0x1894f7
+
+Cached Tickets: (1)
+
+#0>     Client: Administrator @ DC01.LAB
+        Server: krbtgt/DC01.LAB @ DC01.LAB
+        KerbTicket Encryption Type: AES-256-CTS-HMAC-SHA1-96
+        Ticket Flags 0x40e10000 -> forwardable renewable initial pre_authent name_canonicalize              Start Time: 1/3/2026 15:18:36 (local)
+        End Time:   1/4/2026 1:18:36 (local)
+        Renew Time: 1/10/2026 15:18:36 (local)
+        Session Key Type: AES-256-CTS-HMAC-SHA1-96
+        Cache Flags: 0x1 -> PRIMARY
+        Kdc Called: CENTRAL
+#+end_src
+
+* kerberos messages
+
+| client | ---- | AS | TGS | ---- | Service |
+| AS-REQ --> | ---- | <-- AS-REP | ---- |
+| TGS-REQ --> | ---- | ---- | <-- TGS-REP | ---- |
+| AP-REQ --> | ---- | ---- | ---- | <-- AP-REP |
