@@ -1,8 +1,16 @@
 #+title: Dns Enum
+#+author:gabriel
 
-* initial scan
-config no /etc/resolv.conf
+* UDP scan na porta 53
 #+begin_src sh
+nmap -sU -p 53 --open 10.5.2.0/24
+#+end_src
+
+ao encontrar alguns servidores DNS em 10.5.2.2 e 10.5.2.99, selecionamos um destes para testes, e adicionamos na primeira linha do arquivo */etc/resolv.conf*
+
+#+begin_src sh
+sudo vim /etc/resolv.conf
+
 nameserver 192.168.122.26
 nameserver 8.8.8.8
 #+end_src
@@ -26,3 +34,9 @@ dig @192.168.122.26 26.122.168.192.in-addr.arpa
 ;; AUTHORITY SECTION:
 122.168.192.in-addr.arpa. 3600  IN      SOA     central.dc01.lab. hostmaster.dc01.lab. 4 900 600 86400 3600
 #+end_src
+
+Amazingly, using the AXFR protocol we have done forward, reverse DNS Zone Transfer
+and have access to all the machines IP & domain mapping
+
+* ldap querys DC
+we will use LDAP protocol to query the domain using *ldapsearch* as an anonymous user.
