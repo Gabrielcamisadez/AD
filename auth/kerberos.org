@@ -159,3 +159,27 @@ Cached Tickets: (1)
 | AS-REQ --> | ---- | <-- AS-REP | ---- | ---- | ---- |
 | TGS-REQ --> | ---- | ---- | <-- TGS-REP | ---- | ---- |
 | AP-REQ --> | ---- | ---- | ---- | ---- | <-- AP-REP |
+
+** AS-REQ + AS-REP
+this is the first request/response that is sent.
+
+the purpose of this exchange is to obtain a ~ticket granting ticket~ (TGT)
+
+*entities involved* -->
+- client
+- AS/KDC
+
+*messages* -->
+- AS-REQ (Authentication Service Request), Client -> AS
+- AS-REP (Authentication Service Reply), AS -> Client
+
+** AS-REQ
+the AS-REQ can contain ~pre-authentication data~, such as -->
+
+- *PA-PAC-REQUEST*
+  specifies if the user wants to obtain a TGT that includes ~PAC~ data (privileged attribute certificate), containg authorization information like group memberships and user privileges
+
+- *PAC-ENC-TIMESTAMP*
+  it contains a timestamp encrypted with the user's key. It is used to prove that the request comes from the legitimate user, and it is also used to prevent replay attacks
+
+  when the KDC/AS receives this timestamp, it uses the user's secret key to decrypt the timestamp. If the timestamp is within an *acceptable window of time*, authentication proceeds. otherwise, it fails
