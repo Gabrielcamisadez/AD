@@ -1,0 +1,55 @@
+#+title: Ldap Query
+#+author:Gabriel
+
+* ldap-utils
+instalar o ldapsearch -->
+#+begin_src sh
+sudo apt install ldap-utils
+#+end_src
+
+primeira consulta -->
+#+begin_src sh
+ldapsearch -x -H ldap://192.168.122.26 -s base
+
+serverName: CN=CENTRAL,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Confi
+ guration,DC=dc01,DC=lab
+schemaNamingContext: CN=Schema,CN=Configuration,DC=dc01,DC=lab
+namingContexts: DC=dc01,DC=lab
+namingContexts: CN=Configuration,DC=dc01,DC=lab
+namingContexts: CN=Schema,CN=Configuration,DC=dc01,DC=lab
+namingContexts: DC=DomainDnsZones,DC=dc01,DC=lab
+namingContexts: DC=ForestDnsZones,DC=dc01,DC=lab
+isSynchronized: TRUE
+#+end_src
+
+- *-x* --> simple authentication
+- *-H* --> Uniform Resource Identifier (URI)
+- *-s* --> search scope
+
+pegando nome de users -->
+#+begin_src sh
+[1:27][]~ ✮ ldapsearch -x -H ldap://192.168.122.26 -b 'DC=dc01,DC=lab' 'objectClass=user' sAMAccount name distinguishedName -D "tech.lab@dc01.lab" -W | grep "name:"
+
+name: Administrator
+name: Guest
+name: CENTRAL
+name: krbtgt
+name: tech user
+name: tech lab
+name: QUICKEM-KGTHLPH
+name: LESTE
+#+end_src
+
+limpando os nomes -->
+#+begin_src sh
+[1:27][]~ ✮ sed -i "s/name://g" names.txt
+
+Administrator
+ Guest
+ CENTRAL
+ krbtgt
+ tech.user
+ tech.lab
+ QUICKEM-KGTHLPH
+ LESTE
+#+end_src
