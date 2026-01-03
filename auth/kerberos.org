@@ -155,7 +155,7 @@ Cached Tickets: (1)
 
 * kerberos messages
 
-| client | ---- | AS | TGS | ---- | Service |
+| client | ---- | Authentication Server  | Ticket Granting Server  | ---- | Service |
 | AS-REQ --> | ---- | <-- AS-REP | ---- | ---- | ---- |
 | TGS-REQ --> | ---- | ---- | <-- TGS-REP | ---- | ---- |
 | AP-REQ --> | ---- | ---- | ---- | <-- AP-REP | ---- |
