@@ -40,6 +40,7 @@ name: QUICKEM-KGTHLPH
 name: LESTE
 #+end_src
 
+
 limpando os nomes -->
 #+begin_src sh
 [1:27][]~ ✮ sed -i "s/name://g" names.txt
