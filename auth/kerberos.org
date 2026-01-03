@@ -1,6 +1,32 @@
 #+title: Kerberos
 #+author:gabriel
 
+* resume
+** AS-REQ + AS-REP
+1) AS-REQ (Client --> KDC/AS)
+- Timestamp  Client key
+
+2) AS-REP (KDC/AS --> Client)
+- TGT  KDC key
+- TGS session key  CLient key
+
+** TGS-REQ + TGS-REP
+1) TGS-REQ (Client --> KDC/TGS)
+- TGT  KDC key
+- authenticator data  TGS session key
+
+2) TGS-REP (KDC/TGS --> Client)
+- ST  Service key
+- service session key  TGS session key
+
+** AP-REQ + AP-REP
+1) AP-REQ (Client --> SErvice)
+- ST  Service key
+- authenticator data  service session key
+
+2) AP-REP (Service --> client)
+- timestamp  service session key
+
 * intro
 kerberos is an ~authentication key agreement~ protocol
 
@@ -183,3 +209,14 @@ the AS-REQ can contain ~pre-authentication data~, such as -->
   it contains a timestamp encrypted with the user's key. It is used to prove that the request comes from the legitimate user, and it is also used to prevent replay attacks
 
   when the KDC/AS receives this timestamp, it uses the user's secret key to decrypt the timestamp. If the timestamp is within an *acceptable window of time*, authentication proceeds. otherwise, it fails
+
+during this authentication different error can happen, such as -->
+
+- *KRB5KDC_ERR_PREAUTH_REQUIRED*
+the client must include proper authentication data.
+
+- *KRB5KRB_AP_ERR_SKEW*
+since kerberos relies on syncrhonized clocks for security, significant time different between entities can result in a ~time skew error~
+
+- *eRR-PREAUTH-FAILED*
+when the timestamp is not properly encrypted with the user private key. this means that the user typed in the wrong password
