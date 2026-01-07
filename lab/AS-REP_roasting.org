@@ -93,3 +93,4 @@ o SQL server possui uma opção chamada *xp_cmdshell*, que permite executar coma
 #+begin_src sh
 SQL (TELECORE\tel_support01  dbo@master)> enable_xp_cmdshell
 #+end_src
+
