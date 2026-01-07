@@ -1,0 +1,11 @@
+Guest
+DC01
+PKI-SRV
+SQL-SRV
+EX-SRV
+virt-admin
+ESXI-VD
+tel_ops1
+tel_support01
+tel_engineer01
+tel_billing01

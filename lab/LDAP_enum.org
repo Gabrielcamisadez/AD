@@ -144,3 +144,38 @@ name: tel_support01
 name: tel_engineer01
 name: tel_billing01
 #+end_src
+
+pegando os users e limpando os dados -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "objectClass=user" name | grep -iE "^name" | grep -vEi "health|system|federate|discovery|migration|exchange" | awk '{print $2}' > users.txt
+#+end_src
+
+** lista de users suja -->
+#+begin_src sh
+name: tel_ops1
+name: tel_support01
+name: tel_engineer01
+name: tel_billing01
+name: Exchange Online-ApplicationAccount
+name: SystemMailbox{1f05a927-da73-4a43-86c4-b09cf3b29d4f}
+name: SystemMailbox{bb558c35-97f1-4cb9-8ff7-d53741dc928c}
+name: SystemMailbox{e0dc1c29-89c3-4034-b678-e6c29d823ed9}
+name: DiscoverySearchMailbox {D919BA05-46A6-415f-80AD-7E09334BB852}
+name: Migration.8f3e7716-2011-43e4-96b1-aba62d229136
+name: FederatedEmail.4c1f4d8b-8179-4148-93bf-00a95fa1e042
+#+end_src
+
+** lista de users limpa -->
+#+begin_src
+Guest
+DC01
+PKI-SRV
+SQL-SRV
+EX-SRV
+virt-admin
+ESXI-VD
+tel_ops1
+tel_support01
+tel_engineer01
+tel_billing01
+#+end_src
