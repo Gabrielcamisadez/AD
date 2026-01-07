@@ -1,0 +1,5 @@
+DC01.telecore.ad
+PKI-Srv.telecore.ad
+SQL-Srv.telecore.ad
+Ex-Srv.telecore.ad
+esxi-vd.telecore.ad
