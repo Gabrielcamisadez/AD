@@ -1,0 +1,146 @@
+#+title: Ldap Enum
+#+author: gabriel
+
+** ldapsearch --help
+#+begin_src sh
+ldapsearch: invalid option -- '-'
+ldapsearch: unrecognized option --
+usage: ldapsearch [options] [filter [attributes...]]
+where:
+  filter	RFC 4515 compliant LDAP search filter
+  attributes	whitespace-separated list of attribute descriptions
+    which may include:
+      1.1   no attributes
+      *     all user attributes
+      +     all operational attributes
+Search options:
+  -a deref   one of never (default), always, search, or find
+  -A         retrieve attribute names only (no values)
+  -b basedn  base dn for search
+  -c         continuous operation mode (do not stop on errors)
+  -E [!]<ext>[=<extparam>] search extensions (! indicates criticality)
+             [!]accountUsability         (NetScape Account usability)
+             [!]domainScope              (domain scope)
+             !dontUseCopy                (Don't Use Copy)
+             [!]mv=<filter>              (RFC 3876 matched values filter)
+             [!]pr=<size>[/prompt|noprompt] (RFC 2696 paged results/prompt)
+             [!]ps=<changetypes>/<changesonly>/<echg> (draft persistent search)
+             [!]sss=[-]<attr[:OID]>[/[-]<attr[:OID]>...]
+                                         (RFC 2891 server side sorting)
+             [!]subentries[=true|false]  (RFC 3672 subentries)
+             [!]sync=ro[/<cookie>]       (RFC 4533 LDAP Sync refreshOnly)
+                     rp[/<cookie>][/<slimit>] (refreshAndPersist)
+             [!]vlv=<before>/<after>(/<offset>/<count>|:<value>)
+                                         (ldapv3-vlv-09 virtual list views)
+             [!]deref=derefAttr:attr[,...][;derefAttr:attr[,...][;...]]
+             !dirSync=<flags>/<maxAttrCount>[/<cookie>]
+                                         (MS AD DirSync)
+             [!]extendedDn=<flag>        (MS AD Extended DN
+             [!]showDeleted              (MS AD Show Deleted)
+             [!]serverNotif              (MS AD Server Notification)
+             [!]<oid>[=:<value>|::<b64value>] (generic control; no response handling)
+  -f file    read operations from `file'
+  -F prefix  URL prefix for files (default: file:///tmp/)
+  -l limit   time limit (in seconds, or "none" or "max") for search
+  -L         print responses in LDIFv1 format
+  -LL        print responses in LDIF format without comments
+  -LLL       print responses in LDIF format without comments
+             and version
+  -M         enable Manage DSA IT control (-MM to make critical)
+  -P version protocol version (default: 3)
+  -s scope   one of base, one, sub or children (search scope)
+  -S attr    sort the results by attribute `attr'
+  -t         write binary values to files in temporary directory
+  -tt        write all values to files in temporary directory
+  -T path    write files to directory specified by path (default: /tmp)
+  -u         include User Friendly entry names in the output
+  -z limit   size limit (in entries, or "none" or "max") for search
+Common options:
+  -d level   set LDAP debugging level to `level'
+  -D binddn  bind DN
+  -e [!]<ext>[=<extparam>] general extensions (! indicates criticality)
+             [!]assert=<filter>     (RFC 4528; a RFC 4515 Filter string)
+             [!]authzid=<authzid>   (RFC 4370; "dn:<dn>" or "u:<user>")
+             [!]bauthzid            (RFC 3829)
+             [!]chaining[=<resolveBehavior>[/<continuationBehavior>]]
+                     one of "chainingPreferred", "chainingRequired",
+                     "referralsPreferred", "referralsRequired"
+             [!]manageDSAit         (RFC 3296)
+             [!]noop
+             ppolicy
+             [!]postread[=<attrs>]  (RFC 4527; comma-separated attr list)
+             [!]preread[=<attrs>]   (RFC 4527; comma-separated attr list)
+             [!]relax
+             [!]sessiontracking[=<username>]
+             abandon, cancel, ignore (SIGINT sends abandon/cancel,
+             or ignores response; if critical, doesn't wait for SIGINT.
+             not really controls)
+  -H URI     LDAP Uniform Resource Identifier(s)
+  -I         use SASL Interactive mode
+  -n         show what would be done but don't actually do it
+  -N         do not use reverse DNS to canonicalize SASL host name
+  -O props   SASL security properties
+  -o <opt>[=<optparam>] any libldap ldap.conf options, plus
+             ldif_wrap=<width> (in columns, or "no" for no wrapping)
+             nettimeout=<timeout> (in seconds, or "none" or "max")
+  -Q         use SASL Quiet mode
+  -R realm   SASL realm
+  -U authcid SASL authentication identity
+  -v         run in verbose mode (diagnostics to standard output)
+  -V         print version info (-VV only)
+  -w passwd  bind password (for simple authentication)
+  -W         prompt for bind password
+  -x         Simple authentication
+  -X authzid SASL authorization identity ("dn:<dn>" or "u:<user>")
+  -y file    Read password from file
+  -Y mech    SASL mechanism
+  -Z         Start TLS request (-ZZ to require successful response)
+#+end_src
+
+* initial query
+primeira busca com o protocolo LDAP no domain controller -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -s base
+
+namingContexts: DC=DomainDnsZones,DC=telecore,DC=ad
+namingContexts: DC=ForestDnsZones,DC=telecore,DC=ad
+isSynchronized: TRUE
+highestCommittedUSN: 155791
+dsServiceName: CN=NTDS Settings,CN=DC01,CN=Servers,CN=Default-First-Site-Name,
+ CN=Sites,CN=Configuration,DC=telecore,DC=ad
+#+end_src
+
+* group query
+após pegar mais informações sobre o DC, busca pelo objectClass group -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" 'objectClass=group' | grep -iE "^name"
+
+name: Protected Users
+name: DnsAdmins
+name: DnsUpdateProxy
+name: ESX Admins
+#+end_src
+
+pegando o distinguishedName -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" 'objectClass=group' | grep -iE "^distinguishedname"
+
+distinguishedName: CN=Protected Users,CN=Users,DC=telecore,DC=ad
+distinguishedName: CN=DnsAdmins,CN=Users,DC=telecore,DC=ad
+distinguishedName: CN=DnsUpdateProxy,CN=Users,DC=telecore,DC=ad
+distinguishedName: CN=ESX Admins,CN=Users,DC=telecore,DC=ad
+distinguishedName: CN=Organization Management,OU=Microsoft Exchange Security G
+#+end_src
+* users query
+buscar pelo objectClass user -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "objectClass=user" sAMAccountName name distinguishedName | grep -iE "^name"
+
+name: EX-SRV
+name: virt-admin
+name: ESXI-VD
+name: tel_ops1
+name: tel_support01
+name: tel_engineer01
+name: tel_billing01
+#+end_src
