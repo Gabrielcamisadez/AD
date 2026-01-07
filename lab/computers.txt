@@ -1,5 +1,5 @@
-DC01.telecore.ad
-PKI-Srv.telecore.ad
-SQL-Srv.telecore.ad
-Ex-Srv.telecore.ad
-esxi-vd.telecore.ad
+DC01.telecore.ad --  10.5.2.2 
+PKI-Srv.telecore.ad --  10.5.2.8 
+SQL-Srv.telecore.ad --  10.5.2.22 
+Ex-Srv.telecore.ad --  10.5.2.16 
+esxi-vd.telecore.ad --  10.5.2.111 
