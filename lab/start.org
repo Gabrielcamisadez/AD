@@ -1,0 +1,25 @@
+#+title: Start
+
+* initial scan
+
+busca por DNS servers -->
+#+begin_src sh
+sudo nmap -sU -p 53 10.5.2.0/24
+#+end_src
+
+alguns resultados -->
+#+begin_src sh
+Nmap scan report for 10.5.2.99
+Host is up, received echo-reply ttl 62 (0.15s latency).
+Scanned at 2026-01-06 23:18:42 -03 for 0s
+
+PORT   STATE SERVICE REASON
+53/udp open  domain  udp-response ttl 62
+
+Nmap scan report for 10.5.2.111
+Host is up, received echo-reply ttl 62 (0.14s latency).
+Scanned at 2026-01-06 23:18:42 -03 for 1s
+
+PORT   STATE         SERVICE REASON
+53/udp open|filtered domain  no-response
+#+end_src
