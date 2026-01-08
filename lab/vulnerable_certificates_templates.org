@@ -119,3 +119,5 @@ bfb19bca32a6aab8e0b9a836da860e32:August1990password
 #+end_src
 
 é possível conectar via SSH com estas creds!
+
+verificando users com permissões no ESXI com o arquivo */etc/vmware/hostd/authorization.xml*
