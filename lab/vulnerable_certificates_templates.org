@@ -118,6 +118,10 @@ hashcat -m 1000 -a 0 hash.txt /usr/share/wordlists/kali-wordlists/rockyou.txt --
 bfb19bca32a6aab8e0b9a836da860e32:August1990password
 #+end_src
 
-é possível conectar via SSH com estas creds!
+é possível conectar no ESXI via SSH com estas creds!
 
 verificando users com permissões no ESXI com o arquivo */etc/vmware/hostd/authorization.xml*
+
+* 2 python scrtips para interagir com o ESXI
+enum_vms.py
+cmd_exec.py

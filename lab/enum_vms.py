@@ -8,6 +8,6 @@ content = si.RetrieveContent()
 
 for vm in content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True).view:
     ip = vm.guest.ipAddress or (vm.guet.net[0].ipConfig.ipAddress[0].ipAddress if vm.guest.net else "N A")
-    print(f"VM: {vm.name}\n Power: {vm.runtime.powerState}\n OS: {vm.config.guestFullName}\n Tools: {vm.guest.toolsStatus}\n")
+    print(f"VM: {vm.name}\n Power: {vm.runtime.powerState}\n OS: {vm.config.guestFullName}\n Tools: {vm.guest.toolsStatus}\n IP: {ip}\n Notes: {vm.config.annotation}")
 
 Disconnect(si)
