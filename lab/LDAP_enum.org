@@ -2,6 +2,7 @@
 #+author: gabriel
 
 ** ldapsearch --help
+
 #+begin_src sh
 ldapsearch: invalid option -- '-'
 ldapsearch: unrecognized option --
@@ -97,6 +98,16 @@ Common options:
   -Z         Start TLS request (-ZZ to require successful response)
 #+end_src
 
+
+* intro
+O ldapsearch é uma ferramenta de linha de comando poderosa que faz parte do pacote ldap-utils. Ele permite consultar o Active Directory enviando requisições diretamente ao protocolo LDAP (portas 389 ou 636 para LDAPS).
+
+- h: IP do Domain Controller.
+- x: Autenticação simples (Simple Auth).
+- D: Bind DN (seu usuário para logar).
+- W: Solicita a senha no terminal.
+- b: Search Base (onde a busca começa).
+
 * initial query
 primeira busca com o protocolo LDAP no domain controller -->
 #+begin_src sh
@@ -158,6 +169,7 @@ name: tel_engineer01
 name: tel_billing01
 name: Exchange Online-ApplicationAccount
 name: SystemMailbox{1f05a927-da73-4a43-86c4-b09cf3b29d4f}
+
 name: SystemMailbox{bb558c35-97f1-4cb9-8ff7-d53741dc928c}
 name: SystemMailbox{e0dc1c29-89c3-4034-b678-e6c29d823ed9}
 name: DiscoverySearchMailbox {D919BA05-46A6-415f-80AD-7E09334BB852}
