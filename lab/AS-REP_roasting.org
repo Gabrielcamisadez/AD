@@ -85,7 +85,7 @@ tel_support01:#T3l3phon3!
 #+end_src
 
 com essas credenciais é possível acessar o SQL-Srv.telecored.ad, o impacket possui um script client -->
-#+begin_src sh
+shel#+begin_src sh
 mssqlclient.py tel_support01:'#T3l3phon3!'@10.5.2.22 -debug -windows-auth
 #+end_src
 

