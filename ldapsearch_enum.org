@@ -1,0 +1,42 @@
+#+title: Ldapsearch Enum
+#+author:gabriel
+
+* intro
+O ldapsearch é uma ferramenta de linha de comando poderosa que faz parte do pacote ldap-utils. Ele permite consultar o Active Directory enviando requisições diretamente ao protocolo LDAP (portas 389 ou 636 para LDAPS).
+
+- h: IP do Domain Controller.
+- x: Autenticação simples (Simple Auth).
+- D: Bind DN (seu usuário para logar).
+- W: Solicita a senha no terminal.
+- b: Search Base (onde a busca começa).
+
+
+
+*pesquisa por users* -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "objectClass=user" name
+
+ldapsearch -x -H ldap://10.5.2.2 -b "dc=telecore,dc=ad" "(&(objectClass=user))" | grep -Ei "^samaccountname:"
+
+ldapsearch -x -H ldap://10.5.2.2 -b "dc=telecore,dc=ad" "(&(objectClass=user)(cn=*admin*))" sAMAccountName | grep -Ei "^samaccountname"
+#+end_src
+
+*ver grupos*  -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "objectClass=group" description
+#+end_src
+
+*ver todos os grupos com ADMIN no name* -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "(&(objectClass=group)(cn=*Admin*))" cn
+#+end_src
+
+*ver todos os usuários de um grupo* -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "(&(objectClass=group)(name=ESX Admins))" member
+#+end_src
+
+*ver todos os grupos de um usuário específico* -->
+#+begin_src sh
+ldapsearch -x -H ldap://10.5.2.2 -b "DC=telecore,DC=ad" "(&(objectClass=user)(sAMAccountName=virt-admin))" memberOf
+#+end_src
